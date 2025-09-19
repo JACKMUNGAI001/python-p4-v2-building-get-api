@@ -21,6 +21,38 @@ def index():
 
 # start building your API here
 
+# GET all games
+@app.route('/games')
+def games():
+    games = [game.to_dict() for game in Game.query.all()]
+    response = make_response(
+        games,
+        200
+    )
+    return response
+
+# GET one game by id
+@app.route('/games/<int:id>')
+def game_by_id(id):
+    game = Game.query.filter(Game.id == id).first()
+    game_dict = game.to_dict() if game else {}
+    response = make_response(
+        game_dict,
+        200
+    )
+    return response
+
+# GET users who reviewed a game
+@app.route('/games/users/<int:id>')
+def game_users_by_id(id):
+    game = Game.query.filter(Game.id == id).first()
+    users = [user.to_dict(rules=("-reviews",)) for user in game.users] if game else []
+    response = make_response(
+        users,
+        200
+    )
+    return response
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
